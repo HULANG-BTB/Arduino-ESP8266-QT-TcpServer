@@ -18,9 +18,9 @@ MstscServer::MstscServer(QWidget *parent) :
     ui->logs->append(tr("(%1)本机IP地址：%2").arg(Time.toString("yyyy.MM.dd hh:mm:ss")).arg(QNetworkInterface().allAddresses().at(1).toString()));
     Time = QDateTime::currentDateTime();
     ui->logs->append(tr("(%1)正在设置监听端口...").arg(Time.toString("yyyy.MM.dd hh:mm:ss")));
-    if ( Server->listen(QHostAddress::Any, 8888) ) {
+    if ( Server->listen(QHostAddress::Any, 5880) ) {
         Time = QDateTime::currentDateTime();
-        ui->logs->append(tr("(%1)监听端口 8888").arg(Time.toString("yyyy.MM.dd hh:mm:ss")));
+        ui->logs->append(tr("(%1)监听端口 5880").arg(Time.toString("yyyy.MM.dd hh:mm:ss")));
     } else {
         Time = QDateTime::currentDateTime();
         ui->logs->append(tr("(%1)监听端口失败，请检查端口是否被占用！").arg(Time.toString("yyyy.MM.dd hh:mm:ss")));

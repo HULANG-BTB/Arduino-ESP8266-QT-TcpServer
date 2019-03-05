@@ -65,7 +65,7 @@ void loginToServer() {
   Wifi.println("AT+CIPCLOSE");
   delay(1000);
   Serial.println("Connected To Server ! ");
-  Wifi.println("AT+CIPSTART=\"TCP\",\"119.28.180.170\",8888");
+  Wifi.println("AT+CIPSTART=\"TCP\",\"119.28.180.170\",5880");
   delay(5000);
 }
 
