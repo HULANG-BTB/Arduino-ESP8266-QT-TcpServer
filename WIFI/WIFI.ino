@@ -35,43 +35,53 @@ void wake() {
   digitalWrite(OpenPin, HIGH);
 }
 
-void initEsp8266() {
-  Serial.println("Send AT+RST！");
-  Wifi.println("AT+RST");
-  Serial.println("Send AT+UART_DEF=9600,8,1,0,0！");
-  Wifi.println("AT+UART_DEF=9600,8,1,0,0");
+void ConnectToWifi() {
+  Serial.println("Connect To Wifi");
+  Wifi.print("AT+CWJAP=\"Xiaomi_A077\",\"xiaomiwifi\"\r\n");
   delay(5000);
-  Serial.println("Send AT+CWMODE=1！");
-  Wifi.println("AT+CWMODE=1");
-  delay(1000);
-  Serial.println("Send AT+CIPMUX=0！");
-  Wifi.println("AT+CIPMUX=0");
-  delay(1000);
-  connectToWifi();
-  Serial.println("Wifi is OK！");
 }
 
-void connectToWifi() {
-  Serial.println("Disconnect From Wifi! ");
-  Wifi.println("AT+CWQAP");
-  delay(5000);
-  Serial.println("Connect To Wifi Xiaomi_A077 ! ");
-  Wifi.println("AT+CWJAP=\"Xiaomi_A077\",\"xiaomiwifi\"");
-  delay(5000);
+void initEsp8266() {
+  
+  Serial.println("Send AT+CWMODE=1");
+  Wifi.print("AT+CWMODE=1\r\n");
+  delay(1000);
+  Serial.println("Send AT+RST");
+  Wifi.print("AT+RST\r\n");
+  delay(10000);
+  Serial.println("Send AT+UART_DEF=9600,8,1,0,0！");
+  Wifi.print("AT+UART_DEF=9600,8,1,0,0\r\n");
+  delay(1000);
+  Serial.println("Send AT+CIPMUX=0");
+  Wifi.print("AT+CIPMUX=0\r\n");
+  delay(1000);
 }
 
 void loginToServer() {
-  Serial.println("Disconnected From Server ! ");
-  Wifi.println("AT+CIPCLOSE");
-  delay(1000);
   Serial.println("Connected To Server ! ");
-  Wifi.println("AT+CIPSTART=\"TCP\",\"119.28.180.170\",5880");
+  Wifi.print("AT+CIPSTART=\"TCP\",\"119.28.180.170\",5880\r\n");
   delay(5000);
 }
 
+bool WifiStatus() {
+  Serial.println("Check Wifi Status ! ");
+  Wifi.print("AT+CWJAP?\r\n");
+  String result;
+  while(!Wifi.available());
+  while(Wifi.available()) {
+    result += (char)Wifi.read();
+    delay(5); 
+  }
+  result.trim();
+  if (strstr(result.c_str(), "OK") != NULL) {
+    return true;
+  }
+  return false;
+}
+
 bool tcpStatus() {
-  Serial.println("Send AT+CIPSTATUS ! ");
-  Wifi.println("AT+CIPSTATUS");
+  Serial.println("Check Tcp Status ! ");
+  Wifi.print("AT+CIPSTATUS\r\n");
   String result;
   while(!Wifi.available());
   while(Wifi.available()) {
@@ -86,9 +96,13 @@ bool tcpStatus() {
 }
 
 void CheckStatus() {
-  Serial.println("Check Tcp Link Status ! ");
+  if (!WifiStatus()) {
+      ConnectToWifi();
+      return;
+  }
   if (!tcpStatus()) {
       loginToServer();
+      return;
     }
 }
 
