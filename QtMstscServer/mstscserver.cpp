@@ -41,6 +41,10 @@ MstscServer::MstscServer(QWidget *parent) :
  void MstscServer::ClientReadData() {
      this->Socket = (QTcpSocket*)sender();
      QString line = QString::fromUtf8(this->Socket->readAll()).trimmed();
+     if( line == "Alive!" )
+     {
+         return;
+     }
      for(QList<QTcpSocket*>::iterator it = this->ClientList->begin(); it != this->ClientList->end(); it++ ) {
          QTcpSocket* Client = (*it);
          Client->write(QString(line+"\r").toUtf8());
