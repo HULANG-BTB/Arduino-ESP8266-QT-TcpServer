@@ -2,12 +2,16 @@
 #include "ui_mstscserver.h"
 
 #include <QDebug>
+#include <QTimer>
 
 MstscServer::MstscServer(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MstscServer)
 {
     ui->setupUi(this);
+    this->timer = new QTimer();
+    connect(this->timer, SIGNAL(timeout()),this, SLOT(ClientCheckLink()));
+    this->timer->start(10000);
     this->Server = new QTcpServer();
     this->Socket = new QTcpSocket();
     this->ClientList = new QList<QTcpSocket*>();
@@ -24,6 +28,14 @@ MstscServer::MstscServer(QWidget *parent) :
     } else {
         Time = QDateTime::currentDateTime();
         ui->logs->append(tr("(%1)监听端口失败，请检查端口是否被占用！").arg(Time.toString("yyyy.MM.dd hh:mm:ss")));
+    }
+
+}
+
+void MstscServer::ClientCheckLink() {
+    for(QList<QTcpSocket*>::iterator it = this->ClientList->begin(); it != this->ClientList->end(); it++ ) {
+        QTcpSocket* Client = (*it);
+        Client->write(QString("heart jump\r").toUtf8());
     }
 }
 
@@ -66,6 +78,8 @@ MstscServer::MstscServer(QWidget *parent) :
 
 MstscServer::~MstscServer()
 {
+    this->timer->stop();
+    delete this->timer;
     delete this->Socket;
     delete this->Server;
     delete this->ClientList;

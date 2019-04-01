@@ -7,6 +7,7 @@
 #include <QNetworkInterface>
 #include <QList>
 #include <QDateTime>
+#include <QTimer>
 
 namespace Ui {
 class MstscServer;
@@ -24,11 +25,13 @@ private slots:
     void ClientConnect();
     void ClientDisConnect();
     void ClientReadData();
+    void ClientCheckLink();
 
 private:
     Ui::MstscServer *ui;
     QTcpSocket *Socket;
     QTcpServer *Server;
+    QTimer* timer;
     QList<QTcpSocket*> *ClientList;
     QDateTime Time;
 
